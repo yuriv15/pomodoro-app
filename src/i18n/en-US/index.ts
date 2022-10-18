@@ -2,6 +2,11 @@
 // so you can safely delete all default props below
 
 export default {
-  failed: 'Action failed',
-  success: 'Action was successful'
+    failed: 'Action failed',
+    success: 'Action was successful',
+    pomodoroPage: {
+        pomodoro: 'Pomodoro',
+        start: 'Start',
+        pause: 'Pause',
+    },
 };
