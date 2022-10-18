@@ -19,16 +19,32 @@
         </q-circular-progress>
         <div class="q-gutter-md">
             <q-btn
+                v-show="initialTimer !== 0"
                 @click="startTimer"
                 color="primary"
+                style="width: 80px"
                 :label="$t('pomodoroPage.start')"
             />
             <q-btn
+                v-show="
+                    initialTimer !== props.initialTimer &&
+                    !isTimerPaused &&
+                    initialTimer !== 0
+                "
                 @click="pauseTimer"
-                color="warning"
+                color="red-8"
+                text-color="white"
+                style="width: 80px"
+                :label="$t('pomodoroPage.stop')"
+            />
+            <q-btn
+                v-show="isTimerPaused && initialTimer !== props.initialTimer"
+                @click="resetTimer"
+                class="q-mt-md"
+                color="grey-4"
                 text-color="black"
-                v-if="initialTimer !== props.initialTimer"
-                :label="$t('pomodoroPage.pause')"
+                style="width: 80px"
+                :label="$t('pomodoroPage.resetTimer')"
             />
         </div>
     </div>
@@ -57,19 +73,26 @@ const seconds = computed(() => {
     });
 });
 
-function startTimer() {
+function startTimer(): void {
     if (isTimerPaused.value) {
         isTimerPaused.value = false;
         const interval = setInterval(() => {
-            if (initialTimer.value === 0 || isTimerPaused.value)
+            if (initialTimer.value === 0 || isTimerPaused.value) {
+                isTimerPaused.value = true;
                 clearInterval(interval);
-            else initialTimer.value--;
+            } else {
+                initialTimer.value--;
+            }
         }, 1000);
     }
 }
 
-function pauseTimer() {
+function pauseTimer(): void {
     isTimerPaused.value = true;
+}
+
+function resetTimer(): void {
+    initialTimer.value = maxValue;
 }
 </script>
 

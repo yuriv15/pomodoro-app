@@ -7,6 +7,7 @@ export default {
     pomodoroPage: {
         pomodoro: 'Pomodoro',
         start: 'Start',
-        pause: 'Pause',
+        stop: 'Stop',
+        resetTimer: 'Reset',
     },
 };

@@ -1,6 +1,6 @@
 <template>
     <q-page class="flex-center">
-        <PomodoroGauge :initial-timer="30" />
+        <PomodoroGauge :initial-timer="5" />
     </q-page>
 </template>
 
