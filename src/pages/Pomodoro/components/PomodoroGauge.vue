@@ -51,15 +51,20 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
+import { TimerType } from 'pages/Pomodoro/interfaces/timer';
 
 const props = defineProps<{
-    initialTimer: number;
+    timerValue: number;
+    timerType: TimerType;
 }>();
 
-const initialTimer = ref<number>(props.initialTimer);
+const initialTimer = ref<number>(props.timerValue * 60);
 const maxValue = initialTimer.value;
 const isTimerPaused = ref<boolean>(true);
+const emit = defineEmits<{
+    (e: 'timerCompleted'): void;
+}>();
 
 const minutes = computed(() => {
     return Math.floor(initialTimer.value / 60).toLocaleString('en-us', {
@@ -94,6 +99,10 @@ function pauseTimer(): void {
 function resetTimer(): void {
     initialTimer.value = maxValue;
 }
+
+watch(initialTimer, (timer) => {
+    if (timer === 0) emit('timerCompleted');
+});
 </script>
 
 <style lang="scss" scoped>
