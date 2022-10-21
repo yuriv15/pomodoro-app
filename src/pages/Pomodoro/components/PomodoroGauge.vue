@@ -2,7 +2,8 @@
     <div class="gauge-cnt">
         <q-circular-progress
             show-value
-            class="text-light-blue q-ma-md"
+            class="q-ma-md"
+            :class="`text-${gaugeColor}`"
             :value="initialTimer"
             :min="0"
             :max="maxValue"
@@ -10,9 +11,9 @@
             :thickness="0.05"
             rounded
             size="300px"
-            color="light-blue"
-            track-color="light-blue-1"
-            center-color="grey-2"
+            :color="gaugeColor"
+            :track-color="`${gaugeColor}-2`"
+            center-color="grey-1"
             font-size="70px"
         >
             {{ minutes }}:{{ seconds }}
@@ -51,16 +52,20 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref, watch } from 'vue';
+import { computed, onBeforeMount, ref, watch } from 'vue';
 import { TimerType } from 'pages/Pomodoro/interfaces/timer';
+import { cloneDeep } from 'src/utils/variable.functions';
 
 const props = defineProps<{
     timerValue: number;
     timerType: TimerType;
+    workTimer: number;
+    restTimer: number;
+    longRestTimer: number;
 }>();
 
 const initialTimer = ref<number>(props.timerValue * 60);
-const maxValue = initialTimer.value;
+const maxValue = ref<number>(0);
 const isTimerPaused = ref<boolean>(true);
 const emit = defineEmits<{
     (e: 'timerCompleted'): void;
@@ -78,6 +83,10 @@ const seconds = computed(() => {
     });
 });
 
+const gaugeColor = computed(() => {
+    return props.timerType === 'workTimer' ? 'light-blue' : 'amber';
+});
+
 function startTimer(): void {
     if (isTimerPaused.value) {
         isTimerPaused.value = false;
@@ -88,7 +97,7 @@ function startTimer(): void {
             } else {
                 initialTimer.value--;
             }
-        }, 1000);
+        }, 0.001);
     }
 }
 
@@ -97,11 +106,21 @@ function pauseTimer(): void {
 }
 
 function resetTimer(): void {
-    initialTimer.value = maxValue;
+    initialTimer.value = Number(cloneDeep(maxValue.value));
 }
 
-watch(initialTimer, (timer) => {
-    if (timer === 0) emit('timerCompleted');
+watch(initialTimer, async (timer) => {
+    if (timer === 0) {
+        emit('timerCompleted');
+        await setTimeout(() => {
+            maxValue.value = Number(cloneDeep(props[props.timerType]));
+            initialTimer.value = Number(cloneDeep([props.timerType])) * 60;
+        }, 300);
+    }
+});
+
+onBeforeMount(() => {
+    maxValue.value = Number(cloneDeep([props.timerType]));
 });
 </script>
 

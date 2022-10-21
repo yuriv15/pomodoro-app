@@ -3,6 +3,9 @@
         <PomodoroGauge
             :timer-value="timerValue"
             :timer-type="timerType"
+            :work-timer="workTimerValue"
+            :rest-timer="restTimerValue"
+            :long-rest-timer="longRestTimerValue"
             @timerCompleted="finishedTimer"
         />
     </q-page>
@@ -10,10 +13,23 @@
 
 <script lang="ts" setup>
 import PomodoroGauge from 'pages/Pomodoro/components/PomodoroGauge.vue';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { TimerType } from 'pages/Pomodoro/interfaces/timer';
 
-const timerValue = ref<number>(0.05);
+const workTimerValue = ref<number>(25);
+const restTimerValue = ref<number>(5);
+const longRestTimerValue = ref<number>(15);
+const timerValue = computed(() => {
+    switch (timerType.value) {
+        case 'restTimer':
+            return restTimerValue.value;
+        case 'longRestTimer':
+            return longRestTimerValue.value;
+        default:
+            return workTimerValue.value;
+    }
+});
+
 const completedCycles = ref<number>(0);
 
 const timerType = ref<TimerType>('workTimer');
