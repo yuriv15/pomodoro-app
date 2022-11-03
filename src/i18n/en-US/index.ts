@@ -8,5 +8,10 @@ export default {
             title: 'Reset timer',
             message: 'Do you really want to reset the timer?',
         },
+        currentFlow: {
+            workTimer: 'Work timer {currentFlow}',
+            restTimer: 'Rest timer {currentFlow}',
+            longRestTimer: 'Long rest timer {currentFlow}',
+        },
     },
 };

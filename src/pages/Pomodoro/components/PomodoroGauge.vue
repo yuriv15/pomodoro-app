@@ -16,7 +16,12 @@
             center-color="grey-1"
             font-size="70px"
         >
-            {{ minutes }}:{{ seconds }}
+            <main class="gauge-display-cnt">
+                <span> {{ minutes }}:{{ seconds }} </span>
+                <small class="text-subtitle2">{{
+                    $t(`pomodoroPage.currentFlow.${timerType}`, { currentFlow })
+                }}</small>
+            </main>
         </q-circular-progress>
         <div class="q-gutter-md">
             <q-btn
@@ -48,6 +53,7 @@
                 :label="$t('pomodoroPage.resetTimer')"
             />
         </div>
+        <q-btn class="settings-btn" icon="settings" round unelevated />
     </div>
 </template>
 
@@ -63,6 +69,7 @@ const props = defineProps<{
     workTimer: number;
     restTimer: number;
     longRestTimer: number;
+    currentFlow: number;
 }>();
 
 const $q = useQuasar();
@@ -103,7 +110,7 @@ function startTimer(): void {
             } else {
                 gaugeTimer.value--;
             }
-        }, 0.001);
+        }, 1000);
     }
 }
 
@@ -137,8 +144,22 @@ watch(gaugeTimer, async (timer) => {
 <style lang="scss" scoped>
 .gauge-cnt {
     display: flex;
+    width: fit-content;
+    position: relative;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+
+    .gauge-display-cnt {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .settings-btn {
+        position: absolute;
+        top: 0;
+        right: 0;
+    }
 }
 </style>

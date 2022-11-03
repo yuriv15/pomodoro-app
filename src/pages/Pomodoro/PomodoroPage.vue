@@ -1,7 +1,8 @@
 <template>
-    <q-page class="flex-center">
+    <q-page class="pomodoroPage-cnt">
         <PomodoroGauge
             :initial-timer="timerValue"
+            :current-flow="currentFlow"
             :timer-type="timerType"
             :work-timer="workTimerValue"
             :rest-timer="restTimerValue"
@@ -34,6 +35,20 @@ const completedWorkCycles = ref<number>(0);
 
 const timerType = ref<TimerType>('workTimer');
 
+const currentFlow = computed(() => {
+    switch (timerType.value) {
+        case 'workTimer':
+            return completedWorkCycles.value + 1;
+        case 'restTimer':
+            return completedWorkCycles.value;
+        case 'longRestTimer':
+            return completedWorkCycles.value / 4;
+        default:
+            const neverOccurs: never = timerType.value;
+            return neverOccurs;
+    }
+});
+
 function finishedTimer() {
     if (timerType.value === 'longRestTimer' || timerType.value === 'restTimer')
         timerType.value = 'workTimer';
@@ -46,4 +61,10 @@ function finishedTimer() {
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.pomodoroPage-cnt {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+</style>
