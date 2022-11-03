@@ -4,7 +4,7 @@
             show-value
             class="q-ma-md"
             :class="`text-${gaugeColor}`"
-            :value="initialTimer"
+            :value="gaugeTimer"
             :min="0"
             :max="maxValue"
             reverse
@@ -20,7 +20,7 @@
         </q-circular-progress>
         <div class="q-gutter-md">
             <q-btn
-                v-show="initialTimer !== 0"
+                v-show="gaugeTimer !== 0 && isTimerPaused"
                 @click="startTimer"
                 color="primary"
                 style="width: 80px"
@@ -28,9 +28,9 @@
             />
             <q-btn
                 v-show="
-                    initialTimer !== props.initialTimer &&
+                    initialTimer * 60 !== gaugeTimer &&
                     !isTimerPaused &&
-                    initialTimer !== 0
+                    gaugeTimer !== 0
                 "
                 @click="pauseTimer"
                 color="red-8"
@@ -39,8 +39,8 @@
                 :label="$t('pomodoroPage.stop')"
             />
             <q-btn
-                v-show="isTimerPaused && initialTimer !== props.initialTimer"
-                @click="resetTimer"
+                v-show="isTimerPaused && initialTimer * 60 !== gaugeTimer"
+                @click="handleResetTimer"
                 class="q-mt-md"
                 color="grey-4"
                 text-color="black"
@@ -52,33 +52,39 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, onBeforeMount, ref, watch } from 'vue';
+import { computed, nextTick, ref, watch } from 'vue';
 import { TimerType } from 'pages/Pomodoro/interfaces/timer';
-import { cloneDeep } from 'src/utils/variable.functions';
+import { useQuasar } from 'quasar';
+import { useI18n } from 'vue-i18n';
 
 const props = defineProps<{
-    timerValue: number;
+    initialTimer: number;
     timerType: TimerType;
     workTimer: number;
     restTimer: number;
     longRestTimer: number;
 }>();
 
-const initialTimer = ref<number>(props.timerValue * 60);
-const maxValue = ref<number>(0);
+const $q = useQuasar();
+const $i18n = useI18n();
+const gaugeTimer = ref<number>(props.initialTimer * 60);
 const isTimerPaused = ref<boolean>(true);
 const emit = defineEmits<{
     (e: 'timerCompleted'): void;
 }>();
 
+const maxValue = computed(() => {
+    return props[props.timerType] * 60;
+});
+
 const minutes = computed(() => {
-    return Math.floor(initialTimer.value / 60).toLocaleString('en-us', {
+    return Math.floor(gaugeTimer.value / 60).toLocaleString('en-us', {
         minimumIntegerDigits: 2,
     });
 });
 
 const seconds = computed(() => {
-    return (initialTimer.value % 60).toLocaleString('en-us', {
+    return (gaugeTimer.value % 60).toLocaleString('en-us', {
         minimumIntegerDigits: 2,
     });
 });
@@ -91,11 +97,11 @@ function startTimer(): void {
     if (isTimerPaused.value) {
         isTimerPaused.value = false;
         const interval = setInterval(() => {
-            if (initialTimer.value === 0 || isTimerPaused.value) {
+            if (gaugeTimer.value === 0 || isTimerPaused.value) {
                 isTimerPaused.value = true;
                 clearInterval(interval);
             } else {
-                initialTimer.value--;
+                gaugeTimer.value--;
             }
         }, 0.001);
     }
@@ -106,21 +112,25 @@ function pauseTimer(): void {
 }
 
 function resetTimer(): void {
-    initialTimer.value = Number(cloneDeep(maxValue.value));
+    gaugeTimer.value = maxValue.value;
 }
 
-watch(initialTimer, async (timer) => {
+function handleResetTimer() {
+    $q.dialog({
+        title: $i18n.t('pomodoroPage.resetTimerDialog.title'),
+        message: $i18n.t('pomodoroPage.resetTimerDialog.message'),
+        cancel: true,
+    }).onOk(() => {
+        resetTimer();
+    });
+}
+
+watch(gaugeTimer, async (timer) => {
     if (timer === 0) {
         emit('timerCompleted');
-        await setTimeout(() => {
-            maxValue.value = Number(cloneDeep(props[props.timerType]));
-            initialTimer.value = Number(cloneDeep([props.timerType])) * 60;
-        }, 300);
+        await nextTick();
+        gaugeTimer.value = maxValue.value;
     }
-});
-
-onBeforeMount(() => {
-    maxValue.value = Number(cloneDeep([props.timerType]));
 });
 </script>
 

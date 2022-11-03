@@ -1,7 +1,7 @@
 <template>
     <q-page class="flex-center">
         <PomodoroGauge
-            :timer-value="timerValue"
+            :initial-timer="timerValue"
             :timer-type="timerType"
             :work-timer="workTimerValue"
             :rest-timer="restTimerValue"
@@ -30,7 +30,7 @@ const timerValue = computed(() => {
     }
 });
 
-const completedCycles = ref<number>(0);
+const completedWorkCycles = ref<number>(0);
 
 const timerType = ref<TimerType>('workTimer');
 
@@ -38,8 +38,8 @@ function finishedTimer() {
     if (timerType.value === 'longRestTimer' || timerType.value === 'restTimer')
         timerType.value = 'workTimer';
     else {
-        completedCycles.value++;
-        completedCycles.value % 4 === 0
+        completedWorkCycles.value++;
+        completedWorkCycles.value % 4 === 0
             ? (timerType.value = 'longRestTimer')
             : (timerType.value = 'restTimer');
     }
