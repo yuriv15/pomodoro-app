@@ -1,5 +1,5 @@
 <template>
-    <div class="gauge-cnt">
+    <main class="gauge-cnt">
         <q-circular-progress
             show-value
             class="q-ma-md"
@@ -16,12 +16,12 @@
             center-color="grey-1"
             font-size="70px"
         >
-            <main class="gauge-display-cnt">
+            <div class="gauge-display-cnt">
                 <span> {{ minutes }}:{{ seconds }} </span>
                 <small class="text-subtitle2">{{
                     $t(`pomodoroPage.currentFlow.${timerType}`, { currentFlow })
                 }}</small>
-            </main>
+            </div>
         </q-circular-progress>
         <div class="q-gutter-md">
             <q-btn
@@ -53,8 +53,14 @@
                 :label="$t('pomodoroPage.resetTimer')"
             />
         </div>
-        <q-btn class="settings-btn" icon="settings" round unelevated />
-    </div>
+        <q-btn
+            class="settings-btn"
+            icon="settings"
+            round
+            unelevated
+            @click="$emit('openSettings')"
+        />
+    </main>
 </template>
 
 <script lang="ts" setup>
@@ -78,6 +84,7 @@ const gaugeTimer = ref<number>(props.initialTimer * 60);
 const isTimerPaused = ref<boolean>(true);
 const emit = defineEmits<{
     (e: 'timerCompleted'): void;
+    (e: 'openSettings'): void;
 }>();
 
 const maxValue = computed(() => {

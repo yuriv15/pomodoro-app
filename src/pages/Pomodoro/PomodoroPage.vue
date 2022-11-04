@@ -1,14 +1,23 @@
 <template>
     <q-page class="pomodoroPage-cnt">
-        <PomodoroGauge
-            :initial-timer="timerValue"
-            :current-flow="currentFlow"
-            :timer-type="timerType"
-            :work-timer="workTimerValue"
-            :rest-timer="restTimerValue"
-            :long-rest-timer="longRestTimerValue"
-            @timerCompleted="finishedTimer"
-        />
+        <transition-group enter-active-class="animated flipInY">
+            <PomodoroGauge
+                v-if="!isSettingsMode"
+                :initial-timer="timerValue"
+                :current-flow="currentFlow"
+                :timer-type="timerType"
+                :work-timer="workTimerValue"
+                :rest-timer="restTimerValue"
+                :long-rest-timer="longRestTimerValue"
+                @timerCompleted="finishedTimer"
+                @openSettings="isSettingsMode = true"
+            />
+            <PomodoroSettings
+                v-else
+                @saveSettings="saveSettings"
+                @leaveSettings="isSettingsMode = false"
+            />
+        </transition-group>
     </q-page>
 </template>
 
@@ -16,7 +25,9 @@
 import PomodoroGauge from 'pages/Pomodoro/components/PomodoroGauge.vue';
 import { computed, ref } from 'vue';
 import { TimerType } from 'pages/Pomodoro/interfaces/timer';
+import PomodoroSettings from 'pages/Pomodoro/components/PomodoroSettings.vue';
 
+const isSettingsMode = ref<boolean>(false);
 const workTimerValue = ref<number>(25);
 const restTimerValue = ref<number>(5);
 const longRestTimerValue = ref<number>(15);
@@ -49,7 +60,11 @@ const currentFlow = computed(() => {
     }
 });
 
-function finishedTimer() {
+function saveSettings(): void {
+    isSettingsMode.value = false;
+}
+
+function finishedTimer(): void {
     if (timerType.value === 'longRestTimer' || timerType.value === 'restTimer')
         timerType.value = 'workTimer';
     else {

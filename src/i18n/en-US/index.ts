@@ -13,5 +13,14 @@ export default {
             restTimer: 'Rest timer {currentFlow}',
             longRestTimer: 'Long rest timer {currentFlow}',
         },
+        settings: {
+            title: 'Pomodoro Configurations',
+            workTimer: 'Work timer (minutes)',
+            restTimer: 'Work timer (minutes)',
+            longRestTimer: 'Long rest timer (minutes)',
+        },
+    },
+    global: {
+        save: 'Save',
     },
 };
