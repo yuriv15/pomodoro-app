@@ -9,13 +9,13 @@
                 :work-timer="workTimerValue"
                 :rest-timer="restTimerValue"
                 :long-rest-timer="longRestTimerValue"
-                @timerCompleted="finishedTimer"
-                @openSettings="isSettingsMode = true"
+                @timerCompleted="handleFinishedTimer"
+                @openSettings="openSettings"
             />
             <PomodoroSettings
                 v-else
                 @saveSettings="saveSettings"
-                @leaveSettings="isSettingsMode = false"
+                @leaveSettings="leaveSettings"
             />
         </transition-group>
     </q-page>
@@ -27,52 +27,97 @@ import { computed, ref } from 'vue';
 import { TimerType } from 'pages/Pomodoro/interfaces/timer';
 import PomodoroSettings from 'pages/Pomodoro/components/PomodoroSettings.vue';
 
-const isSettingsMode = ref<boolean>(false);
-const workTimerValue = ref<number>(25);
-const restTimerValue = ref<number>(5);
-const longRestTimerValue = ref<number>(15);
-const timerValue = computed(() => {
-    switch (timerType.value) {
-        case 'restTimer':
-            return restTimerValue.value;
-        case 'longRestTimer':
-            return longRestTimerValue.value;
-        default:
-            return workTimerValue.value;
+const {
+    isSettingsMode,
+    workTimerValue,
+    restTimerValue,
+    longRestTimerValue,
+    openSettings,
+    saveSettings,
+    leaveSettings,
+} = usePomodoroSettings();
+
+const { timerType, timerValue, handleFinishedTimer, currentFlow } =
+    useGaugeOperation();
+
+function usePomodoroSettings() {
+    const isSettingsMode = ref<boolean>(false);
+    const workTimerValue = ref<number>(25);
+    const restTimerValue = ref<number>(5);
+    const longRestTimerValue = ref<number>(15);
+
+    function openSettings(): void {
+        isSettingsMode.value = true;
     }
-});
 
-const completedWorkCycles = ref<number>(0);
-
-const timerType = ref<TimerType>('workTimer');
-
-const currentFlow = computed(() => {
-    switch (timerType.value) {
-        case 'workTimer':
-            return completedWorkCycles.value + 1;
-        case 'restTimer':
-            return completedWorkCycles.value;
-        case 'longRestTimer':
-            return completedWorkCycles.value / 4;
-        default:
-            const neverOccurs: never = timerType.value;
-            return neverOccurs;
+    function saveSettings(): void {
+        isSettingsMode.value = false;
     }
-});
 
-function saveSettings(): void {
-    isSettingsMode.value = false;
+    function leaveSettings(): void {
+        isSettingsMode.value = false;
+    }
+
+    return {
+        isSettingsMode,
+        workTimerValue,
+        restTimerValue,
+        longRestTimerValue,
+        openSettings,
+        saveSettings,
+        leaveSettings,
+    };
 }
 
-function finishedTimer(): void {
-    if (timerType.value === 'longRestTimer' || timerType.value === 'restTimer')
-        timerType.value = 'workTimer';
-    else {
-        completedWorkCycles.value++;
-        completedWorkCycles.value % 4 === 0
-            ? (timerType.value = 'longRestTimer')
-            : (timerType.value = 'restTimer');
+function useGaugeOperation() {
+    const completedWorkCycles = ref<number>(0);
+    const timerType = ref<TimerType>('workTimer');
+
+    const timerValue = computed(() => {
+        switch (timerType.value) {
+            case 'restTimer':
+                return restTimerValue.value;
+            case 'longRestTimer':
+                return longRestTimerValue.value;
+            default:
+                return workTimerValue.value;
+        }
+    });
+
+    const currentFlow = computed(() => {
+        switch (timerType.value) {
+            case 'workTimer':
+                return completedWorkCycles.value + 1;
+            case 'restTimer':
+                return completedWorkCycles.value;
+            case 'longRestTimer':
+                return completedWorkCycles.value / 4;
+            default:
+                const neverOccurs: never = timerType.value;
+                return neverOccurs;
+        }
+    });
+
+    function handleFinishedTimer(): void {
+        if (
+            timerType.value === 'longRestTimer' ||
+            timerType.value === 'restTimer'
+        )
+            timerType.value = 'workTimer';
+        else {
+            completedWorkCycles.value++;
+            completedWorkCycles.value % 4 === 0
+                ? (timerType.value = 'longRestTimer')
+                : (timerType.value = 'restTimer');
+        }
     }
+
+    return {
+        timerType,
+        timerValue,
+        currentFlow,
+        handleFinishedTimer,
+    };
 }
 </script>
 
