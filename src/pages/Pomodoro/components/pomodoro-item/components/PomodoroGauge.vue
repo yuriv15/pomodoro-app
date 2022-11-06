@@ -32,11 +32,7 @@
                 :label="$t('pomodoroPage.start')"
             />
             <q-btn
-                v-show="
-                    initialTimer * 60 !== gaugeTimer &&
-                    !isTimerPaused &&
-                    gaugeTimer !== 0
-                "
+                v-show="!isTimerPaused && gaugeTimer !== 0"
                 @click="pauseTimer"
                 color="red-8"
                 text-color="white"
@@ -54,6 +50,7 @@
             />
         </div>
         <q-btn
+            v-show="isTimerPaused"
             class="settings-btn"
             icon="settings"
             round
