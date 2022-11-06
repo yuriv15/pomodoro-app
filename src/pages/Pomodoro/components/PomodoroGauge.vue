@@ -150,12 +150,10 @@ watch(gaugeTimer, async (timer) => {
 
 <style lang="scss" scoped>
 .gauge-cnt {
-    display: flex;
-    width: fit-content;
+    display: grid;
+    grid-template-rows: 1fr 70px;
     position: relative;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    justify-items: center;
 
     .gauge-display-cnt {
         display: flex;
