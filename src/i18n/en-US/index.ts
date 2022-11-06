@@ -16,7 +16,7 @@ export default {
         settings: {
             title: 'Pomodoro Configurations',
             workTimer: 'Work timer (minutes)',
-            restTimer: 'Work timer (minutes)',
+            restTimer: 'Rest timer (minutes)',
             longRestTimer: 'Long rest timer (minutes)',
         },
     },

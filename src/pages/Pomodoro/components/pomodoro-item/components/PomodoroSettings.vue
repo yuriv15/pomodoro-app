@@ -76,22 +76,86 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import { settingsType } from 'pages/Pomodoro/interfaces/settings';
+import { computed, onBeforeMount, ref } from 'vue';
+import {
+    ISettingsValues,
+    settingsType,
+} from 'pages/Pomodoro/interfaces/settings';
+
+const props = defineProps<{
+    workTimer: number;
+    restTimer: number;
+    longRestTimer: number;
+}>();
 
 const emit = defineEmits<{
-    (e: 'saveSettings'): void;
+    (e: 'saveSettings', settings: ISettingsValues): void;
     (e: 'leaveSettings'): void;
 }>();
 
-const configMode = ref<settingsType>('defaultConfig');
-const workTimerValue = ref<number>(25);
-const restTimerValue = ref<number>(5);
-const longRestTimerValue = ref<number>(15);
+const defaultConfig = {
+    workTimerValue: 25,
+    restTimerValue: 5,
+    longRestTimerValue: 15,
+};
+
+const longConfig = {
+    workTimerValue: 50,
+    restTimerValue: 10,
+    longRestTimerValue: 30,
+};
+
+const workTimerValue = ref<number>(defaultConfig.workTimerValue);
+const restTimerValue = ref<number>(defaultConfig.restTimerValue);
+const longRestTimerValue = ref<number>(defaultConfig.longRestTimerValue);
+
+const configMode = computed<settingsType>({
+    get() {
+        if (
+            workTimerValue.value === defaultConfig.workTimerValue &&
+            restTimerValue.value === defaultConfig.restTimerValue &&
+            longRestTimerValue.value === defaultConfig.longRestTimerValue
+        )
+            return 'defaultConfig';
+        else if (
+            workTimerValue.value === longConfig.workTimerValue &&
+            restTimerValue.value === longConfig.restTimerValue &&
+            longRestTimerValue.value === longConfig.longRestTimerValue
+        )
+            return 'longConfig';
+        else return 'customConfig';
+    },
+    set(pomodoroConfig: settingsType) {
+        switch (pomodoroConfig) {
+            case 'defaultConfig':
+                workTimerValue.value = defaultConfig.workTimerValue;
+                restTimerValue.value = defaultConfig.restTimerValue;
+                longRestTimerValue.value = defaultConfig.longRestTimerValue;
+                break;
+            case 'longConfig':
+                workTimerValue.value = longConfig.workTimerValue;
+                restTimerValue.value = longConfig.restTimerValue;
+                longRestTimerValue.value = longConfig.longRestTimerValue;
+                break;
+            case 'customConfig':
+                break;
+        }
+    },
+});
 
 function handleSaveSettings() {
-    emit('saveSettings');
+    emit('saveSettings', {
+        workTimerValue: workTimerValue.value,
+        restTimerValue: restTimerValue.value,
+        longRestTimerValue: longRestTimerValue.value,
+    });
 }
+
+onBeforeMount(() => {
+    workTimerValue.value = props.workTimer;
+    restTimerValue.value = props.restTimer;
+    longRestTimerValue.value = props.longRestTimer;
+});
 </script>
 
 <style lang="scss" scoped></style>

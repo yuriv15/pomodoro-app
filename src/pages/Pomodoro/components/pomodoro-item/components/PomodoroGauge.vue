@@ -13,7 +13,7 @@
             size="300px"
             :color="gaugeColor"
             :track-color="`${gaugeColor}-2`"
-            center-color="grey-1"
+            :center-color="`${gaugeColor}-1`"
             font-size="70px"
         >
             <div class="gauge-display-cnt">
