@@ -25,9 +25,20 @@
             />
         </section>
         <section>
-            <span class="text-subtitle2 q-my-md">{{
-                $t('pomodoroPage.settings.workTimer')
-            }}</span>
+            <span class="text-subtitle2 q-my-md">
+                <span>
+                    {{ $t('pomodoroPage.settings.workTimer') }}
+                </span>
+                -
+                <span>
+                    {{
+                        `${workTimerValue} ${$t(
+                            'pomodoroPage.minutesQuantity',
+                            workTimerValue
+                        )}`
+                    }}
+                </span>
+            </span>
             <q-slider
                 v-model="workTimerValue"
                 :min="5"
@@ -39,9 +50,20 @@
             />
         </section>
         <section>
-            <span class="text-subtitle2 q-my-md">{{
-                $t('pomodoroPage.settings.restTimer')
-            }}</span>
+            <span class="text-subtitle2 q-my-md">
+                <span>
+                    {{ $t('pomodoroPage.settings.restTimer') }}
+                </span>
+                -
+                <span>
+                    {{
+                        `${restTimerValue} ${$t(
+                            'pomodoroPage.minutesQuantity',
+                            restTimerValue
+                        )}`
+                    }}
+                </span>
+            </span>
             <q-slider
                 v-model="restTimerValue"
                 :min="5"
@@ -53,9 +75,20 @@
             />
         </section>
         <section>
-            <span class="text-subtitle2 q-my-md">{{
-                $t('pomodoroPage.settings.longRestTimer')
-            }}</span>
+            <span class="text-subtitle2 q-my-md">
+                <span>
+                    {{ $t('pomodoroPage.settings.longRestTimer') }}
+                </span>
+                -
+                <span>
+                    {{
+                        `${longRestTimerValue} ${$t(
+                            'pomodoroPage.minutesQuantity',
+                            longRestTimerValue
+                        )}`
+                    }}
+                </span>
+            </span>
             <q-slider
                 v-model="longRestTimerValue"
                 :min="5"

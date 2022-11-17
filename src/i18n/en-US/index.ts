@@ -4,6 +4,7 @@ export default {
         start: 'Start',
         stop: 'Stop',
         resetTimer: 'Reset',
+        minutesQuantity: 'minute | minutes',
         resetTimerDialog: {
             title: 'Reset timer',
             message: 'Do you really want to reset the timer?',
