@@ -101,6 +101,7 @@
         </section>
         <q-btn
             @click="handleSaveSettings"
+            :disabled="!hasUnsavedInfo"
             color="primary"
             style="width: 80px"
             :label="$t('global.save')"
@@ -114,6 +115,7 @@ import {
     ISettingsValues,
     settingsType,
 } from 'pages/Pomodoro/interfaces/settings';
+import { Md5 } from 'ts-md5';
 
 const props = defineProps<{
     workTimer: number;
@@ -141,6 +143,8 @@ const longConfig = {
 const workTimerValue = ref<number>(defaultConfig.workTimerValue);
 const restTimerValue = ref<number>(defaultConfig.restTimerValue);
 const longRestTimerValue = ref<number>(defaultConfig.longRestTimerValue);
+
+const initialConfigHash = ref<string>();
 
 const configMode = computed<settingsType>({
     get() {
@@ -176,6 +180,20 @@ const configMode = computed<settingsType>({
     },
 });
 
+const configurationState = computed(() =>
+    JSON.stringify({
+        workTimerValue: workTimerValue.value,
+        restTimerValue: restTimerValue.value,
+        longRestTimerValue: longRestTimerValue.value,
+    })
+);
+
+const configHash = computed(() => Md5.hashStr(configurationState.value));
+
+const hasUnsavedInfo = computed(
+    () => initialConfigHash.value !== configHash.value
+);
+
 function handleSaveSettings() {
     emit('saveSettings', {
         workTimerValue: workTimerValue.value,
@@ -188,6 +206,7 @@ onBeforeMount(() => {
     workTimerValue.value = props.workTimer;
     restTimerValue.value = props.restTimer;
     longRestTimerValue.value = props.longRestTimer;
+    initialConfigHash.value = configHash.value;
 });
 </script>
 
