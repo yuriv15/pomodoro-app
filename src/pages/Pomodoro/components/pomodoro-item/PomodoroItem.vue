@@ -58,10 +58,10 @@ function usePomodoroSettings() {
         isSettingsMode.value = false;
     }
 
-    function saveSettings(pomodoroSettingsvalues: ISettingsValues): void {
-        workTimerValue.value = pomodoroSettingsvalues.workTimerValue;
-        restTimerValue.value = pomodoroSettingsvalues.restTimerValue;
-        longRestTimerValue.value = pomodoroSettingsvalues.longRestTimerValue;
+    function saveSettings(pomodoroSettingsValues: ISettingsValues): void {
+        workTimerValue.value = pomodoroSettingsValues.workTimerValue;
+        restTimerValue.value = pomodoroSettingsValues.restTimerValue;
+        longRestTimerValue.value = pomodoroSettingsValues.longRestTimerValue;
         leaveSettings();
     }
 
